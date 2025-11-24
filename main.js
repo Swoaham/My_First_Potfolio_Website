@@ -588,23 +588,42 @@ class PortfolioApp {
         this.initProjectGlider();
     }
     
-    handleContactForm() {
-        // Simulate form submission
-        const submitBtn = document.querySelector('#contactForm button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        
-        submitBtn.innerHTML = 'Sending... 📧';
-        submitBtn.disabled = true;
-        
-        setTimeout(() => {
-            submitBtn.innerHTML = 'Message Sent! ✅';
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                document.getElementById('contactForm').reset();
-            }, 2000);
-        }, 1500);
-    }
+     handleContactForm() {
+      const form = document.getElementById('contactForm');
+      const formData = new FormData(form);
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      
+      submitBtn.innerHTML = 'Sending... 📧';
+      submitBtn.disabled = true;
+      
+      fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'Accept': 'application/json'
+          }
+      })
+      .then(response => {
+          if (response.ok) {
+              submitBtn.innerHTML = 'Message Sent! ✅';
+              form.reset();
+          } else {
+              throw new Error('Submission failed');
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          submitBtn.innerHTML = 'Failed. Try Again.';
+      })
+      .finally(() => {
+          setTimeout(() => {
+              submitBtn.innerHTML = originalText;
+              submitBtn.disabled = false;
+          }, 2000);
+      });
+      }
+  
     
     animate() {
         requestAnimationFrame(() => this.animate());
