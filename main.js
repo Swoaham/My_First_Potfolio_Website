@@ -458,10 +458,10 @@ class PortfolioApp {
         });
         
         // Contact form
-        document.getElementById('contactForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleContactForm();
-        });
+        // document.getElementById('contactForm').addEventListener('submit', (e) => {
+        //     e.preventDefault();
+        //     this.handleContactForm();
+        // });
         
         // Smooth scrolling for navigation
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
