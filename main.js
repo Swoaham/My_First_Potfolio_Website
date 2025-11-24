@@ -594,40 +594,55 @@ class PortfolioApp {
     }
     
      handleContactForm() {
-      const form = document.getElementById('contactForm');
-      const formData = new FormData(form);
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
-      
-      submitBtn.innerHTML = 'Sending... 📧';
-      submitBtn.disabled = true;
-      
-      fetch(form.action, {
-          method: 'POST',
-          body: formData,
-          headers: {
-              'Accept': 'application/json'
-          }
-      })
-      .then(response => {
-          if (response.ok) {
-              submitBtn.innerHTML = 'Message Sent! ✅';
-              form.reset();
-          } else {
-              throw new Error('Submission failed');
-          }
-      })
-      .catch(error => {
-          console.error('Error:', error);
-          submitBtn.innerHTML = 'Failed. Try Again.';
-      })
-      .finally(() => {
-          setTimeout(() => {
-              submitBtn.innerHTML = originalText;
-              submitBtn.disabled = false;
-          }, 2000);
-      });
-      }
+    const form = document.getElementById('contactForm');
+    if (!form) {
+        console.error('handleContactForm called but #contactForm not present');
+        return;
+    }
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+    const originalText = submitBtn ? submitBtn.innerHTML : '';
+    
+    if (submitBtn) {
+        submitBtn.innerHTML = 'Sending... 📧';
+        submitBtn.disabled = true;
+    }
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        // Formspree returns JSON; if not ok, try to extract message
+        return response.json().then(json => {
+            if (!response.ok) {
+                const err = json && json.error ? json.error : JSON.stringify(json);
+                throw new Error(err);
+            }
+            return json;
+        });
+    })
+    .then(data => {
+        console.log('Formspree success response:', data);
+        if (submitBtn) submitBtn.innerHTML = 'Message Sent! ✅';
+        form.reset();
+    })
+    .catch(error => {
+        console.error('Form submission error:', error);
+        if (submitBtn) submitBtn.innerHTML = 'Failed. Try Again.';
+    })
+    .finally(() => {
+        setTimeout(() => {
+            if (submitBtn) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }, 2000);
+    });
+}
   
     
     animate() {
