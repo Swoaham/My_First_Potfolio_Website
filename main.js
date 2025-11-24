@@ -446,37 +446,42 @@ class PortfolioApp {
     }
     
     initEventListeners() {
-        // Admin button
-        document.getElementById('adminBtn').addEventListener('click', () => {
-            this.showAdminModal();
-        });
-        
-        // Admin form
-        document.getElementById('adminForm').addEventListener('submit', (e) => {
+    // Admin button
+    document.getElementById('adminBtn').addEventListener('click', () => {
+        this.showAdminModal();
+    });
+    
+    // Admin form
+    document.getElementById('adminForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleAdminLogin();
+    });
+    
+    // Contact form — only attach if element exists
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            this.handleAdminLogin();
+            this.handleContactForm();
         });
-        
-        // Contact form
-        // document.getElementById('contactForm').addEventListener('submit', (e) => {
-        //     e.preventDefault();
-        //     this.handleContactForm();
-        // });
-        
-        // Smooth scrolling for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.querySelector(anchor.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
+    } else {
+        console.warn('contactForm element not found. Make sure the form has id="contactForm"');
     }
+    
+    // Smooth scrolling for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(anchor.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+}
     
     showAdminModal() {
         document.getElementById('adminModal').classList.remove('hidden');
